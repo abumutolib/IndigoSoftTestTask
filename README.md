@@ -1,58 +1,30 @@
-﻿# IndigoSoftTestTask
+﻿# Тестовое задание C# Backend
 
-The project was generated using the [Clean.Architecture.Solution.Template](https://github.com/jasontaylordev/IndigoSoftTestTask) version 8.0.6.
 
-## Build
+Необходимо разработать вариант сервиса для работы с пользователями и их IP адресов. 
+Сервис накапливает данные от источника событий о подключении пользователя со случайного IP адреса и сохраняет их в БД (предпочтительно PostgreSQL). IP адреса в событии для каждого счета могут повторяться или могут быть новыми. Один пользователь может подключаться с разных IP адресов, несколько пользователей могут подключаться с одного IP адреса. 
+Формат данных в событии (пользователь long, строка IP адреса)
+100001, “127.0.0.1”
 
-Run `dotnet build -tl` to build the solution.
+** Сервис должен позволять: **
 
-## Run
+- найти пользователей по начальной или полной части IP адреса (например, если в качестве строки поиска указать “31.214”, а у пользователя 1234567 зафиксированы ранее следующие IP ["31.214.157.141", "62.4.36.194"], то метод сервиса вернет список, в котором помимо прочих подходящих пользователей будет и 1234567) 
+- найти все накопленные IP адреса пользователя 
+- найти время и IP адреса последнего подключения пользователя
 
-To run the web application:
+** Критерии оценки: **
+- Полнота выполнения условий задачи 
+- Продуманность решения с точки зрения оптимальности работы сервиса (то как он собирает данные и обновляет их в БД, то как реализован поиск по IP адресам)
+- Качество кода, правильность архитектурных решений 
+- Покрытие ключевых моментов тестами
 
-```bash
-cd .\src\Web\
-dotnet watch run
-```
+# Реализация
+Для реализации этого тестового задания на C#, можно использовать ASP.NET Core для создания веб-сервиса и PostgreSQL как базу данных для хранения пользователей и их IP-адресов.
 
-Navigate to https://localhost:5001. The application will automatically reload if you change any of the source files.
-
-## Code Styles & Formatting
-
-The template includes [EditorConfig](https://editorconfig.org/) support to help maintain consistent coding styles for multiple developers working on the same project across various editors and IDEs. The **.editorconfig** file defines the coding styles applicable to this solution.
-
-## Code Scaffolding
-
-The template includes support to scaffold new commands and queries.
-
-Start in the `.\src\Application\` folder.
-
-Create a new command:
-
-```
-dotnet new ca-usecase --name CreateTodoList --feature-name TodoLists --usecase-type command --return-type int
-```
-
-Create a new query:
-
-```
-dotnet new ca-usecase -n GetTodos -fn TodoLists -ut query -rt TodosVm
-```
-
-If you encounter the error *"No templates or subcommands found matching: 'ca-usecase'."*, install the template and try again:
-
-```bash
-dotnet new install Clean.Architecture.Solution.Template::8.0.6
-```
-
-## Test
-
-The solution contains unit, integration, and functional tests.
-
-To run the tests:
-```bash
-dotnet test
-```
-
-## Help
-To learn more about the template go to the [project website](https://github.com/jasontaylordev/CleanArchitecture). Here you can find additional guidance, request new features, report a bug, and discuss the template with other users.
+** Основные шаги: **
+1. Создание модели данных: Мы будем использовать две сущности: User и UserIP. Сущность User представляет пользователя, а UserIP хранит IP-адреса и время подключения пользователя.
+2. Создание базы данных: Используем PostgreSQL, где в таблице Users будем хранить информацию о пользователях, а в таблице UserIPs – IP-адреса, с которых пользователь подключался, и время подключения.
+3. Методы сервиса:
+    - Поиск пользователей по IP-адресу: Метод, который возвращает пользователей, чьи IP-адреса содержат указанную строку.
+    - Получение всех IP-адресов пользователя: Метод возвращает список всех IP-адресов, с которых подключался пользователь.
+    - Получение последнего IP-адреса и времени подключения пользователя: Метод возвращает последний IP-адрес и время последнего подключения пользователя.
