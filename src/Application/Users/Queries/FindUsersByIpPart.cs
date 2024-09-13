@@ -16,9 +16,19 @@ internal class FindUsersByIpPartQueryHandler : IRequestHandler<FindUsersByIpPart
     }
 
     public async Task<IReadOnlyCollection<UserVm>> Handle(FindUsersByIpPartQuery request, CancellationToken cancellationToken)
-        => await _context.UserIPs.Where(uip => uip.IPAddress.Contains(request.IpPart))
+    {
+        var items = _context.Users.Include(x => x.UserIPs).ToList();
+        return await _context.UserIPs.Where(uip => uip.IPAddress.Contains(request.IpPart))
         .Select(e => e.User)
         .Distinct()
         .ProjectTo<UserVm>(_mapper.ConfigurationProvider)
         .ToListAsync(cancellationToken);
+    }
+
+    //public async Task<IReadOnlyCollection<UserVm>> Handle(FindUsersByIpPartQuery request, CancellationToken cancellationToken)
+    //    => await _context.UserIPs.Where(uip => uip.IPAddress.Contains(request.IpPart))
+    //    .Select(e => e.User)
+    //    .Distinct()
+    //    .ProjectTo<UserVm>(_mapper.ConfigurationProvider)
+    //    .ToListAsync(cancellationToken);
 }
